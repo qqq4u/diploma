@@ -1,31 +1,32 @@
 package main
 
 import (
-	"context"
 	"database/sql"
 	"fmt"
+	"log"
+	"net/http"
+	"os"
+	"time"
+
 	generatedAuth "github.com/go-park-mail-ru/2023_1_4from5/internal/pkg/auth/delivery/grpc/generated"
 	authDelivery "github.com/go-park-mail-ru/2023_1_4from5/internal/pkg/auth/delivery/http"
 	commentDelivery "github.com/go-park-mail-ru/2023_1_4from5/internal/pkg/comment/delivery/http"
 	generatedCreator "github.com/go-park-mail-ru/2023_1_4from5/internal/pkg/creator/delivery/grpc/generated"
 	creatorDelivery "github.com/go-park-mail-ru/2023_1_4from5/internal/pkg/creator/delivery/http"
 	"github.com/go-park-mail-ru/2023_1_4from5/internal/pkg/middleware"
-	notificationUsecase "github.com/go-park-mail-ru/2023_1_4from5/internal/pkg/notification/usecase"
+	mock "github.com/go-park-mail-ru/2023_1_4from5/internal/pkg/notification/mocks"
 	postDelivery "github.com/go-park-mail-ru/2023_1_4from5/internal/pkg/post/delivery/http"
 	subscriptionDelivery "github.com/go-park-mail-ru/2023_1_4from5/internal/pkg/subscription/delivery/http"
 	generatedUser "github.com/go-park-mail-ru/2023_1_4from5/internal/pkg/user/delivery/grpc/generated"
 	userDelivery "github.com/go-park-mail-ru/2023_1_4from5/internal/pkg/user/delivery/http"
 	"github.com/go-park-mail-ru/2023_1_4from5/internal/pkg/utils"
+	"github.com/golang/mock/gomock"
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
-	"log"
-	"net/http"
-	"os"
-	"time"
 )
 
 func main() {
@@ -98,7 +99,8 @@ func run() error {
 		log.Fatalf("cant connect to session grpc")
 	}
 
-	notifApp := notificationUsecase.SetupFirebase(context.Background(), zapSugar)
+	crtler := gomock.NewController(nil)
+	notifApp := mock.NewMockNotificationApp(crtler)
 	authClient := generatedAuth.NewAuthServiceClient(authConn)
 	userClient := generatedUser.NewUserServiceClient(userConn)
 	creatorClient := generatedCreator.NewCreatorServiceClient(creatorConn)
