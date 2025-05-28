@@ -4,6 +4,13 @@ import (
 	"context"
 	"crypto/sha1"
 	"fmt"
+	"io"
+	"net/http"
+	"os"
+	"strconv"
+	"strings"
+	"time"
+
 	"github.com/go-park-mail-ru/2023_1_4from5/internal/models"
 	generatedCommon "github.com/go-park-mail-ru/2023_1_4from5/internal/models/proto"
 	generatedAuth "github.com/go-park-mail-ru/2023_1_4from5/internal/pkg/auth/delivery/grpc/generated"
@@ -15,12 +22,6 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/mailru/easyjson"
 	"go.uber.org/zap"
-	"io"
-	"net/http"
-	"os"
-	"strconv"
-	"strings"
-	"time"
 )
 
 type UserHandler struct {
@@ -787,8 +788,6 @@ func (h *UserHandler) Payment(w http.ResponseWriter, r *http.Request) {
 
 func (h *UserHandler) AddPaymentInfo(w http.ResponseWriter, r *http.Request) {
 	userDataJWT, err := token.ExtractJWTTokenMetadata(r)
-
-	//TODO: проверить соответствие количества денег(и вообще в идеале не класть его и считать из month_count, и вообще должен лететь токен киви какой-нибудь)
 
 	if err != nil {
 		utils.Response(w, http.StatusUnauthorized, nil)

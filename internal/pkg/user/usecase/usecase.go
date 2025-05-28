@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+
 	"github.com/go-park-mail-ru/2023_1_4from5/internal/models"
 	"github.com/go-park-mail-ru/2023_1_4from5/internal/pkg/user"
 	"github.com/google/uuid"
@@ -67,7 +68,8 @@ func (uc *UserUsecase) Subscribe(ctx context.Context, paymentInfo uuid.UUID, mon
 }
 
 func (uc *UserUsecase) AddPaymentInfo(ctx context.Context, subscription models.SubscriptionDetails) error {
-	return uc.repo.AddPaymentInfo(ctx, subscription)
+	_, err := uc.repo.Subscribe(ctx, subscription)
+	return err
 }
 
 func (uc *UserUsecase) GetProfile(ctx context.Context, userId uuid.UUID) (models.UserProfile, error) {

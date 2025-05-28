@@ -45,8 +45,8 @@ create table creator
     description     varchar(500),
     posts_count     integer default 0 not null,
     aim             varchar(100),
-    money_needed    float32   default 0,
-    money_got       float32   default 0
+    money_needed    float   default 0,
+    money_got       float   default 0
 );
 
 ALTER TABLE creator
@@ -60,7 +60,7 @@ create table subscription
     creator_id      uuid        not null
         constraint subscription_creator_creator_id_fk
             references creator (creator_id),
-    month_cost      float32       not null,
+    month_cost      float       not null,
     title           varchar(40) not null,
     description     varchar(200),
     is_available    bool default true
@@ -84,7 +84,8 @@ create table user_payments
         constraint user_payments_subscription_subscription_id_fk references subscription (subscription_id),
     payment_timestamp timestamp not null default now(),
     payment_info      text, ---что-то, номер кошелька, что угодно
-    float32             float32     not null
+    money             float     not null,
+    month_count       int       not null
 );
 
 create table post
@@ -164,7 +165,7 @@ create table donation
     creator_id    uuid      not null
         constraint donation_creator_creator_id_fk
             references "creator" (creator_id),
-    money_count   float32     not null,
+    money_count   float     not null,
     donation_date timestamp not null default now()
 );
 
@@ -206,8 +207,8 @@ CREATE TABLE "statistics"
     posts_per_month          int           default 0,
     subscriptions_bought     int           default 0,
     donations_count          int           default 0,
-    money_from_donations     float32         default 0,
-    money_from_subscriptions float32         default 0,
+    money_from_donations     float         default 0,
+    money_from_subscriptions float         default 0,
     new_followers            int           default 0,
     likes_count              int           default 0,
     comments_count           int           default 0,
@@ -346,7 +347,7 @@ BEGIN
         INSERT INTO "statistics" (creator_id, month) VALUES (creator, date_trunc('month', now())::date);
     END IF;
     UPDATE "statistics"
-    SET money_from_subscriptions = money_from_subscriptions + NEW.float32,
+    SET money_from_subscriptions = money_from_subscriptions + NEW.float,
         subscriptions_bought     = subscriptions_bought + 1
     WHERE creator_id = creator
       AND date_trunc('month', month)::date = date_trunc('month', now())::date;
@@ -429,7 +430,7 @@ CREATE OR REPLACE FUNCTION update_balance() RETURNS TRIGGER AS
 $update_balance$
 BEGIN
     UPDATE creator
-    SET balance = balance + NEW.float32
+    SET balance = balance + NEW.float
     WHERE creator_id IN (SELECT creator_id FROM subscription WHERE subscription.subscription_id = OLD.subscription_id);
     RETURN NEW;
 END;
