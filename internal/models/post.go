@@ -3,11 +3,12 @@ package models
 // easyjson -all ./internal/models/post.go
 
 import (
-	generatedCreator "github.com/go-park-mail-ru/2023_1_4from5/internal/pkg/creator/delivery/grpc/generated"
-	"github.com/google/uuid"
 	"html"
 	"time"
 	"unicode"
+
+	generatedCreator "github.com/go-park-mail-ru/2023_1_4from5/internal/pkg/creator/delivery/grpc/generated"
+	"github.com/google/uuid"
 )
 
 const (
@@ -75,7 +76,6 @@ func (postCreationData PostCreationData) IsValid() error {
 
 func (post *Post) Sanitize() {
 	post.Title = html.EscapeString(post.Title)
-	post.Text = html.EscapeString(post.Text)
 	for i := range post.Subscriptions {
 		post.Subscriptions[i].Sanitize()
 	}

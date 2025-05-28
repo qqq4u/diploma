@@ -2,6 +2,11 @@ package http
 
 import (
 	"fmt"
+	"io"
+	"net/http"
+	"os"
+	"path/filepath"
+
 	"github.com/go-park-mail-ru/2023_1_4from5/internal/models"
 	generatedCommon "github.com/go-park-mail-ru/2023_1_4from5/internal/models/proto"
 	generatedAuth "github.com/go-park-mail-ru/2023_1_4from5/internal/pkg/auth/delivery/grpc/generated"
@@ -13,10 +18,6 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/mailru/easyjson"
 	"go.uber.org/zap"
-	"io"
-	"net/http"
-	"os"
-	"path/filepath"
 )
 
 type PostHandler struct {
@@ -332,20 +333,6 @@ func (h *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if len(creatorInfo.Error) != 0 {
-		utils.Response(w, http.StatusInternalServerError, nil)
-		return
-	}
-
-	notification := models.Notification{
-		Topic: fmt.Sprintf("%s-%s", postData.Creator, "user"),
-		Title: "Новый пост",
-		Body:  fmt.Sprintf("У автора %s вышел новый пост \"%s\"", creatorInfo.Name, postData.Title),
-		Photo: fmt.Sprintf("%s%s.jpg", models.PhotoURL, creatorInfo.Photo),
-	}
-
-	err = h.notificationApp.SendUserNotification(notification, r.Context())
-	if err != nil {
-		h.logger.Error(err)
 		utils.Response(w, http.StatusInternalServerError, nil)
 		return
 	}
