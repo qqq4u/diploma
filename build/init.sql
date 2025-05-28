@@ -179,6 +179,18 @@ create table follow
             references "creator" (creator_id)
 );
 
+CREATE TEXT SEARCH DICTIONARY russian_ispell (
+    TEMPLATE = ispell,
+    DictFile = russian,
+    AffFile = russian,
+    StopWords = russian
+    );
+CREATE TEXT SEARCH CONFIGURATION ru (COPY = russian);
+
+ALTER TEXT SEARCH CONFIGURATION ru
+    ALTER MAPPING FOR hword, hword_part, word
+        WITH russian_ispell, russian_stem;
+
 CREATE INDEX idx_creator_name ON creator (LOWER(name) varchar_pattern_ops);
 CREATE INDEX idx_creator_description ON creator (LOWER(description) varchar_pattern_ops);
 
